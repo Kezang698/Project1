@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Your Wishlist</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
+  <style>
+    body {
+      background-color: #fff9fc;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .container {
+      padding: 4rem 2rem;
+    }
+
+    .wishlist-title {
+      font-size: 2.8rem;
+      color: #e84393;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .wishlist-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      justify-content: center;
+    }
+
+    .wishlist-card {
+      width: 250px;
+      background: #fff;
+      border-radius: 1rem;
+      box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.1);
+      overflow: hidden;
+      text-align: center;
+      transition: transform 0.3s;
+      padding-bottom: 1rem;
+    }
+
+    .wishlist-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .wishlist-card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .wishlist-card h5 {
+      font-size: 1.5rem;
+      margin: 1rem 0 0.5rem;
+    }
+
+    .remove-btn {
+      margin-top: 0.5rem;
+      padding: 0.3rem 1rem;
+      font-size: 1.2rem;
+      background-color: #e84393;
+      color: white;
+      border: none;
+      border-radius: 1rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .remove-btn:hover {
+      background-color: #c73780;
+    }
+
+    .empty-msg {
+      text-align: center;
+      font-size: 1.5rem;
+      color: #777;
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h2 class="wishlist-title"><i class="fas fa-heart"></i> Your Liked Flowers</h2>
+
+    <!-- Wishlist content -->
+    <div class="wishlist-grid" id="wishlistGrid"></div>
+
+    <!-- Empty message -->
+    <p id="emptyMessage" class="empty-msg" style="display: none;">Your wishlist is empty 💔</p>
+  </div>
+
+  <script>
+    let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+    const grid = document.getElementById("wishlistGrid");
+    const emptyMessage = document.getElementById("emptyMessage");
+
+    function renderWishlist() {
+      grid.innerHTML = "";
+
+      if (wishlist.length === 0) {
+        emptyMessage.style.display = "block";
+        return;
+      }
+
+      emptyMessage.style.display = "none";
+
+      wishlist.forEach((item, index) => {
+        const card = document.createElement("div");
+        card.className = "wishlist-card";
+        card.innerHTML = `
+          <img src="${item.img}" alt="${item.name}">
+          <h5>${item.name}</h5>
+          <button class="remove-btn" data-id="${item.id}">Remove ❌</button>
+        `;
+        grid.appendChild(card);
+      });
+
+      // Add event listeners to remove buttons
+      document.querySelectorAll(".remove-btn").forEach(button => {
+        button.addEventListener("click", function () {
+          const idToRemove = this.getAttribute("data-id");
+
+          wishlist = wishlist.filter(item => item.id !== idToRemove);
+          localStorage.setItem("wishlist", JSON.stringify(wishlist));
+
+          // Re-render
+          renderWishlist();
+        });
+      });
+    }
+
+    renderWishlist();
+  </script>
+</body>
+</html>
